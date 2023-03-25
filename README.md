@@ -1,2 +1,2 @@
 # WMSlider
-Web Maker's slider with vanilla javascript
+Slider/Carrosel simples de usar, extensível e com várias opções de customização, construído com vanilla javascript.

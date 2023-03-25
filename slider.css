@@ -1,0 +1,32 @@
+/* Global fix */
+body:has(wm-slider[dragging]) *{
+	user-select: none;
+	cursor: grabbing;
+}
+
+/* Some of the magic lies here */
+wm-slider{
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: calc(100%/var(--indexed-element-amount));
+	overflow: auto;
+	pointer-events: none;
+	position: relative;
+	box-sizing: border-box;
+}
+wm-slider[draggable]{
+	cursor: grab;
+}
+
+/* Pseudo elements to properly position active element */
+wm-slider:before,
+wm-slider:after{
+	content: '';
+	grid-column: auto / span var(--indexed-element-amount, 2);
+}
+
+/* Hiding ScrollBar */
+/* https://caniuse.com/?search=%3A%3A-webkit-scrollbar */
+wm-slider::-webkit-scrollbar{
+	display: none;
+}
