@@ -18,7 +18,9 @@ class WMSlider extends HTMLElement{
 				var activeChildIndex = activeChild ? this.childList.indexOf(activeChild) : 0;
 				
 				// Scrolling to active child
+				this.allowInput = true;
 				this.setActiveChild(activeChildIndex, 'auto');
+				this.#repositionChildren();
 		
 				// Auto Sliding
 				this.autoSlide();
@@ -90,29 +92,35 @@ class WMSlider extends HTMLElement{
 		
 		var that = this;
 		
-		// Avoiding timeout overlaping
-		if(this.autoSlideTimeout) clearInterval(this.autoSlideTimeout);
-		
-		// Deactivating Child
-		for(var child of this.childList) child.removeAttribute('active');
-		
-		// Sanitazing Index
-		index = Math.min(this.childList.length - 1, Math.max(0, index));
-		
-		// Activating Child
-		this.activeChild = this.childList[index];
-		this.activeChild.setAttributeNode(document.createAttribute('active'));
+		if(this.allowInput){
+			
+			this.allowInput = false;
 
-		// Activating Trigger
-		for(var trigger of document.querySelectorAll(`button[slider="${this.id}"]`)) trigger.removeAttribute('active');
-		
-		for(var trigger of document.querySelectorAll(`button[slider="${this.id}"][slide-to="${index}"]`)) trigger.setAttributeNode(document.createAttribute('active'));
-		
-		// Sliding to active child
-		this.slideToActive(behavior);
-		
-		// Auto Sliding
-		this.autoSlide();
+			// Avoiding timeout overlaping
+			if(this.autoSlideTimeout) clearInterval(this.autoSlideTimeout);
+
+			// Deactivating Child
+			for(var child of this.childList) child.removeAttribute('active');
+
+			// Sanitazing Index
+			index = Math.min(this.childList.length - 1, Math.max(0, index));
+
+			// Activating Child
+			this.activeChild = this.childList[index];
+			this.activeChild.setAttributeNode(document.createAttribute('active'));
+
+			// Activating Trigger
+			for(var trigger of document.querySelectorAll(`button[slider="${this.id}"]`)) trigger.removeAttribute('active');
+
+			for(var trigger of document.querySelectorAll(`button[slider="${this.id}"][slide-to="${index}"]`)) trigger.setAttributeNode(document.createAttribute('active'));
+
+			// Sliding to active child
+			this.slideToActive(behavior);
+
+			// Auto Sliding
+			this.autoSlide();
+	
+		}
 		
 	}	
 	
@@ -159,22 +167,15 @@ class WMSlider extends HTMLElement{
 
 		}
 		
-		var that = this;
-				
-		this.addEventListener('scroll', scrollListener);
-//		this.scrollTo({left: scrollTarget, behavior: behavior});
-		(behavior === 'smooth') ? this.#scrollAnimation(scrollTarget) : this.scrollLeft = scrollTarget;
-		
-		function scrollListener(){
-		
-			// Fix Children
-			if(that.scrollLeft === parseInt(scrollTarget)){
-				
-				that.#repositionChildren();
-				that.removeEventListener('scroll', scrollListener);
-				
-			}
+		if(behavior === 'smooth'){
 			
+			this.#scrollAnimation(scrollTarget);
+		
+		}else{
+			
+			this.scrollLeft = scrollTarget;
+			this.allowInput = true;
+		
 		}
 		
 	}
@@ -187,7 +188,16 @@ class WMSlider extends HTMLElement{
 		
 		this.scrollLeft = easing();
 
-		if(interpolatedTime < 1) window.requestAnimationFrame(() => this.#scrollAnimation(scrollTarget, initialScroll, startingTime));
+		if(interpolatedTime < 1){
+			
+			window.requestAnimationFrame(() => that.#scrollAnimation(scrollTarget, initialScroll, startingTime));
+										 
+	 	}else{
+										 
+			this.#repositionChildren();										 
+			this.allowInput = true;
+										 
+		}
 	
 		// MAYBE TODO Add customizability to the easing function
 		// https://spicyyoghurt.com/tools/easing-functions
@@ -211,28 +221,29 @@ class WMSlider extends HTMLElement{
 		if(this.isInfinite){ // Fixing Children
 		   		
 			var that = this;
-			var indexedChildren = [...this.childList];
+			var indexedChildren = [this.activeChild];
+		
 			var index = this.childList.indexOf(this.activeChild);
-
-			for(var i = 0; i < this.indexedElementAmount + this.elementSlidingAmount; i++){
-
-				var previousChildren = index - 1 - i;
-				var nextChildren = index + 1 + i;
-				
-				if(previousChildren < 0){
-				
-					var lastChild = indexedChildren.splice(this.childList.length - 1, 1)[0];
-					indexedChildren.splice(0, 0, lastChild);
-				
-				}
-
-				if(nextChildren >= this.childList.length){
-									
-					var firstChild = indexedChildren.splice(0, 1)[0];
-					indexedChildren.push(firstChild);
-				
-				}
-
+			var previousIndex = index - 1;
+			var nextIndex = index + 1;
+		
+			for(var i = 0; i < this.elementSlidingAmount + this.indexedElementAmount - 1; i++){
+		
+				if(previousIndex < 0) previousIndex = this.childList.length - 1;
+				if(nextIndex > this.childList.length - 1) nextIndex = 0;
+		
+				var nextChild = this.childList[nextIndex];
+				var previousChild = this.childList[previousIndex];
+		
+				if(indexedChildren.includes(nextChild)) nextChild = nextChild.cloneNode(true);
+				indexedChildren.push(nextChild);
+		
+				if(indexedChildren.includes(previousChild)) previousChild = previousChild.cloneNode(true);
+				indexedChildren.splice(0, 0, previousChild);		
+		
+				previousIndex--;
+				nextIndex++;
+		
 			}
 			
 			this.innerHTML = '';
@@ -292,7 +303,7 @@ class WMSliderTrigger extends HTMLButtonElement{
 						return slider.setActiveChild((newIndex >= 0) ? newIndex : slider.childList.length + newIndex);
 					case 'right':
 						var newIndex = activeIndex + slider.elementSlidingAmount;
-						return slider.setActiveChild((newIndex < slider.childList.length - 1) ? newIndex : newIndex - slider.childList.length);
+						return slider.setActiveChild((newIndex < slider.childList.length) ? newIndex : newIndex - slider.childList.length);
 					default:
 						return slider.setActiveChild(parseInt(that.slideTo));
 					   
