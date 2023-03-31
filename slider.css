@@ -18,6 +18,10 @@ wm-slider[draggable]{
 	cursor: grab;
 }
 
+button[is="wm-slider-trigger"]{
+	cursor: pointer;
+}
+
 /* Pseudo elements to properly position active element */
 wm-slider:before,
 wm-slider:after{
