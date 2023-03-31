@@ -8,7 +8,7 @@ body:has(wm-slider[dragging]) *{
 wm-slider{
 	display: grid;
 	grid-auto-flow: column;
-	grid-auto-columns: calc(100%/var(--indexed-element-amount));
+	grid-auto-columns: calc(100%/var(--indexed-element-amount, 1));
 	overflow: auto;
 	pointer-events: none;
 	position: relative;
