@@ -4,30 +4,33 @@ class WMSlider extends HTMLElement{
 		
 		super();
 		
+		var that = this;
+		
 		this.activeChild;
 		this.childList = [];
 		this.appendedChildList = [];
 		
-		document.onreadystatechange = () => {
+		document.addEventListener('readystatechange', () => {
 			
 			if(document.readyState === 'complete'){
 				
-				this.childList = [...this.children];
-								
-				var activeChild = this.querySelector(':scope > *[active]');
-				var activeChildIndex = activeChild ? this.childList.indexOf(activeChild) : 0;
+				that.childList = [...that.children];
+				console.log(that, that.childList);
+				
+				var activeChild = that.querySelector(':scope > *[active]');
+				var activeChildIndex = activeChild ? that.childList.indexOf(activeChild) : 0;
 				
 				// Scrolling to active child
-				this.allowInput = true;
-				this.setActiveChild(activeChildIndex, 'auto');
-				this.#repositionChildren();
+				that.allowInput = true;
+				that.setActiveChild(activeChildIndex, 'auto');
+				that.#repositionChildren();
 		
 				// Auto Sliding
-				this.autoSlide();
+				that.autoSlide();
 				
 			}
 			
-		}
+		});
 		
 	}
 	
