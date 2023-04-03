@@ -15,7 +15,6 @@ class WMSlider extends HTMLElement{
 			if(document.readyState === 'complete'){
 				
 				that.childList = [...that.children];
-				console.log(that, that.childList);
 				
 				var activeChild = that.querySelector(':scope > *[active]');
 				var activeChildIndex = activeChild ? that.childList.indexOf(activeChild) : 0;
@@ -29,6 +28,12 @@ class WMSlider extends HTMLElement{
 				that.autoSlide();
 				
 			}
+			
+		});
+		
+		window.addEventListener('resize', () => {
+			
+			that.slideToActive();
 			
 		});
 		
