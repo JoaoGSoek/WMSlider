@@ -17,6 +17,9 @@ wm-slider{
 wm-slider[draggable]{
 	cursor: grab;
 }
+wm-slider > *{
+	pointer-events: all;
+}
 
 button[is="wm-slider-trigger"]{
 	cursor: pointer;

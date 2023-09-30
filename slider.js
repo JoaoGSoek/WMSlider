@@ -66,8 +66,7 @@ class WMSlider extends HTMLElement{
 				
 					var endX = e.clientX;
 					var finalScrollLeft = initialScrollLeft + startX - endX;
-					
-					that.setActiveChild(that.childList.indexOf(that.children[Math.round(finalScrollLeft/(that.actualWidth/that.indexedElementAmount) - 2)]));
+					that.setActiveChild(that.childList.indexOf(that.children[Math.round(finalScrollLeft/(that.actualWidth/that.indexedElementAmount) - that.indexedElementAmount)]));
 					that.removeAttribute('dragging');
 					
 					document.removeEventListener('mouseup', mouseUpHandler);
