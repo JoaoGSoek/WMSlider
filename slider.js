@@ -110,25 +110,7 @@ class WMSlider extends HTMLElement{
 			for(var child of this.childList) child.removeAttribute('active');
 
 			// Sanitazing Index
-			
-			var min = 0;
-			var max = this.childList.length - 1;
-			
-			if(this.clipUnreachableElement){
-				
-				if(this.activeElementAlign === 'left'){
-					
-					max += -this.indexedElementAmount + 1;
-					
-				}else if(this.activeElementAlign === 'right'){
-						 
-					min = this.indexedElementAmount - 1;
-						 
-				}
-				
-			}
-			
-			index = Math.min(max, Math.max(min, index));
+			index = Math.min(this.maxIndex, Math.max(this.minIndex, index));
 
 			// Activating Child
 			this.activeChild = this.childList[index];
@@ -291,7 +273,25 @@ class WMSlider extends HTMLElement{
 		return width;
 		
 	}
-	
+
+	// Plain Getters
+	get maxIndex(){
+		
+		var max = this.childList.length - 1;
+		if(this.clipUnreachableElement && this.activeElementAlign === 'left') max += -this.indexedElementAmount + 1;
+		
+		return max;
+
+	}
+	get minIndex(){
+		
+		var min = 0;
+		if(this.clipUnreachableElement && this.activeElementAlign === 'right') min = this.indexedElementAmount - 1;
+		
+		return min;
+
+	}
+
 	// Attributes
 	get isDraggable(){return this.getAttribute('draggable') !== null;}
 	get isInfinite(){return this.getAttribute('infinite') !== null;}
@@ -326,10 +326,10 @@ class WMSliderTrigger extends HTMLButtonElement{
 					   
 					case 'left':
 						var newIndex = activeIndex - slider.elementSlidingAmount;
-						return slider.setActiveChild((newIndex >= 0) ? newIndex : slider.childList.length + newIndex);
+						return slider.setActiveChild((activeIndex === slider.minIndex) ? slider.childList.length + newIndex : newIndex);
 					case 'right':
 						var newIndex = activeIndex + slider.elementSlidingAmount;
-						return slider.setActiveChild((newIndex < slider.childList.length) ? newIndex : newIndex - slider.childList.length);
+						return slider.setActiveChild((activeIndex === slider.maxIndex) ? newIndex - slider.childList.length : newIndex);
 					default:
 						return slider.setActiveChild(parseInt(that.slideTo));
 					   
