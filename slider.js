@@ -110,7 +110,25 @@ class WMSlider extends HTMLElement{
 			for(var child of this.childList) child.removeAttribute('active');
 
 			// Sanitazing Index
-			index = Math.min(this.childList.length - 1, Math.max(0, index));
+			
+			var min = 0;
+			var max = this.childList.length - 1;
+			
+			if(this.clipUnreachableElement){
+				
+				if(this.activeElementAlign === 'left'){
+					
+					max += -this.indexedElementAmount + 1;
+					
+				}else if(this.activeElementAlign === 'right'){
+						 
+					min = this.indexedElementAmount - 1;
+						 
+				}
+				
+			}
+			
+			index = Math.min(max, Math.max(min, index));
 
 			// Activating Child
 			this.activeChild = this.childList[index];
@@ -284,6 +302,7 @@ class WMSlider extends HTMLElement{
 	get indexedElementAmount(){return parseFloat(getComputedStyle(this).getPropertyValue('--indexed-element-amount')) || 1;}
 	get elementSlidingAmount(){return parseInt(getComputedStyle(this).getPropertyValue('--element-sliding-amount')) || 1;}
 	get slideDuration(){return parseInt(getComputedStyle(this).getPropertyValue('--slide-duration')) || 500;}
+	get clipUnreachableElement(){return getComputedStyle(this).getPropertyValue('--clip-unreachable-element') === 'true' || false;}
 	
 }
 
