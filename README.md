@@ -56,4 +56,5 @@ Slider/Carrossel simples de usar, extensível e com várias opções de customiz
 - **--indexed-element-amount**: Quantidade de elementos que o carrossel deve exibir por vez (valor padrão: 1)
 - **--element-sliding-amount**: Quantidade de elementos que o carrossel deve deslizar por vez (valor padrão: 1)
 - **--slide-duration**: Tempo em ms que o deslize do carrossel deve durar (valor padrão: 500)
+- **--clip-unreachable-element**: Define se os elementos inalcansáveis devem ser ativados. Essa propriedade possui valor lógico inverso - isto é - true define que estes elementos não devem ser ativados. Essa propriedade não produz efeito em sliders com **--active-element-align: center;**. (valor padrão: false)
 
