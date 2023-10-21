@@ -23,8 +23,8 @@ Slider/Carrossel simples de usar, extensível e com várias opções de customiz
 4. Use o elemento ``<button is="wm-slider-trigger" slider="meu-slider"></button>`` para criar botões de navegação para o seu slider
     1. No atributo ``slider`` digite o id do slider que seu botão deve controlar
 5. Para que seus botões consigam deslizar seu slider, atribua um dos seguintes valores ao atributo ``slide-to``:
-    1. **left**: (``slide-to="left"``) para deslizar o carrossel para a esquerda.
-    2. **right**: (``slide-to="right"``) para deslizar o carrossel para a direita.
+    1. **left||top**: (``slide-to="left||top"``) para deslizar o carrossel para a esquerda - se left - ou para o topo - se top.
+    2. **right||bottom**: (``slide-to="right||bottom"``) para deslizar o carrossel para a direita - se right - ou para o fundo - se bottom.
     3. **Qualquer valor númerico**: (``slide-to="0"``) para deslizar o carrossel para o elemento na posição 0.
 6. **Divirta-se!**
 
@@ -32,6 +32,7 @@ Slider/Carrossel simples de usar, extensível e com várias opções de customiz
 - **draggable**: Disponibiliza a navegação através dos eventos de "clique-e-arraste" do mouse (``<wm-slider draggable></wm-slider>``)
 - **infinite**: Ativa o efeito de navegação infinita (``<wm-slider infinite></wm-slider>``)
 - **auto-slide**: Ativa o deslize automático do carrossel dentro do intervalo determinado - definido em ms (``<wm-slider auto-slide="1000"></wm-slider>``)
+- **vertical**: Determina que o deslize será vertical - por padrão, o deslize é horizontal (``<wm-slider vertical></wm-slider>``)
 
 ## Atributos HTML de uso do ``<wm-slider></wm-slider>``
 - **active**: Determina qual, elemento dentro do carrossel, e qual botão, está ativo
@@ -50,11 +51,10 @@ Slider/Carrossel simples de usar, extensível e com várias opções de customiz
 
 ## Propriedades CSS do ``<wm-slider></wm-slider>``
 - **--active-element-align**: Alinha o elemento ativo à posição indicada:
-    - **--active-element-align: left;**: Alinha o elemento ativo à esquerda (Valor padrão)
+    - **--active-element-align: left||top;**: Alinha o elemento ativo à esquerda - se left - ou ao topo, para sliders verticais - se top (Valor padrão)
     - **--active-element-align: center;**: Alinha o elemento ativo ao centro
-    - **--active-element-align: right;**: Alinha o elemento ativo à direita
+    - **--active-element-align: right||bottom;**: Alinha o elemento ativo à direita - se right - ou ao fundo, para sliders verticais - se bottom
 - **--indexed-element-amount**: Quantidade de elementos que o carrossel deve exibir por vez (valor padrão: 1)
 - **--element-sliding-amount**: Quantidade de elementos que o carrossel deve deslizar por vez (valor padrão: 1)
-- **--slide-duration**: Tempo em ms que o deslize do carrossel deve durar (valor padrão: 500)
+- **--slide-duration**: Tempo em ms de duração do deslize do carrossel (valor padrão: 500)
 - **--clip-unreachable-element**: Define se os elementos inalcansáveis devem ser ativados. Essa propriedade possui valor lógico inverso - isto é - true define que estes elementos não devem ser ativados. Essa propriedade não produz efeito em sliders com **--active-element-align: center;**. (valor padrão: false)
-
