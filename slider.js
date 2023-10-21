@@ -48,7 +48,9 @@ class WMSlider extends HTMLElement{
 			this.addEventListener('mousedown', function(e){
 				
 				var startX = e.clientX;
+				var startY = e.clientY;
 				var initialScrollLeft = that.scrollLeft;
+				var initialScrollTop = that.scrollTop;
 				
 				that.setAttributeNode(document.createAttribute('dragging'));
 
@@ -58,15 +60,19 @@ class WMSlider extends HTMLElement{
 				function mouseMoveHandler(e){
 				
 					var endX = e.clientX;
+					var endY = e.clientY;
 					that.scrollLeft = initialScrollLeft + startX - endX;
+					that.scrollTop = initialScrollTop + startY - endY;
 					
 				}
 				
 				function mouseUpHandler(e){
 				
 					var endX = e.clientX;
+					var endY = e.clientY;
 					var finalScrollLeft = initialScrollLeft + startX - endX;
-					that.setActiveChild(that.childList.indexOf(that.children[Math.round(finalScrollLeft/(that.actualWidth/that.indexedElementAmount) - that.indexedElementAmount)]));
+					var finalScrollTop = initialScrollTop + startY - endY;
+					that.setActiveChild(that.childList.indexOf(that.children[Math.round((that.isVertical ? finalScrollTop : finalScrollLeft)/((that.isVertical ? that.actualHeight : that.actualWidth)/that.indexedElementAmount) - that.indexedElementAmount)]));
 					that.removeAttribute('dragging');
 					
 					document.removeEventListener('mouseup', mouseUpHandler);
@@ -153,23 +159,30 @@ class WMSlider extends HTMLElement{
 		}
 		
 		var activeChildWidth = targetedChild.offsetWidth; // Child Width
+		var activeChildHeight = targetedChild.offsetHeight; // Child Height
 		var activeStyle = targetedChild.style;
+		
 		activeChildWidth += (parseFloat(activeStyle.marginLeft) + parseFloat(activeStyle.marginRight)) || 0;
 		activeChildWidth += (parseFloat(activeStyle.paddingLeft) + parseFloat(activeStyle.paddingRight)) || 0;
 		activeChildWidth += (parseFloat(activeStyle.borderLeftWidth) + parseFloat(activeStyle.borderRightWidth)) || 0;
+		
+		activeChildHeight += (parseFloat(activeStyle.marginTop) + parseFloat(activeStyle.marginBottom)) || 0;
+		activeChildHeight += (parseFloat(activeStyle.paddingTop) + parseFloat(activeStyle.paddingBottom)) || 0;
+		activeChildHeight += (parseFloat(activeStyle.borderTopWidth) + parseFloat(activeStyle.borderBottomWidth)) || 0;
 		
 		var scrollTarget;
 		
 		switch(this.activeElementAlign){ // Calculating Alignment
 
 			case 'right':
-				scrollTarget = targetedChild.offsetLeft - this.actualWidth + activeChildWidth;
+			case 'bottom':
+				scrollTarget = this.isVertical ? targetedChild.offsetTop - this.actualHeight + activeChildHeight : targetedChild.offsetLeft - this.actualWidth + activeChildWidth;
 			break;
 			case 'center':
-				scrollTarget = targetedChild.offsetLeft - (this.actualWidth - activeChildWidth)/2;
+				scrollTarget = this.isVertical ? targetedChild.offsetTop - (this.actualHeight - activeChildHeight)/2 : targetedChild.offsetLeft - (this.actualWidth - activeChildWidth)/2;
 			break;
 			default:
-				scrollTarget = targetedChild.offsetLeft;
+				scrollTarget = this.isVertical ? targetedChild.offsetTop : targetedChild.offsetLeft;
 			break;
 
 		}
@@ -181,6 +194,7 @@ class WMSlider extends HTMLElement{
 		}else{
 			
 			this.scrollLeft = scrollTarget;
+			this.scrollTop = scrollTarget;
 			this.allowInput = true;
 		
 		}
@@ -188,16 +202,17 @@ class WMSlider extends HTMLElement{
 	}
 	
 	// Scroll animation
-	#scrollAnimation(scrollTarget, initialScroll = this.scrollLeft, startingTime = Date.now()){
+	#scrollAnimation(scrollTarget, initialScrollLeft = this.scrollLeft, initialScrollTop = this.scrollTop, startingTime = Date.now()){
 	
 		var that = this;
 		var interpolatedTime = Math.min(1, (Date.now() - startingTime)/this.slideDuration);
 		
-		this.scrollLeft = easing();
+		this.scrollLeft = easing(initialScrollLeft);
+		this.scrollTop = easing(initialScrollTop);
 
 		if(interpolatedTime < 1){
 			
-			window.requestAnimationFrame(() => that.#scrollAnimation(scrollTarget, initialScroll, startingTime));
+			window.requestAnimationFrame(() => that.#scrollAnimation(scrollTarget, initialScrollLeft, initialScrollTop, startingTime));
 										 
 	 	}else{
 										 
@@ -208,7 +223,7 @@ class WMSlider extends HTMLElement{
 	
 		// MAYBE TODO Add customizability to the easing function
 		// https://spicyyoghurt.com/tools/easing-functions
-		function easing(){
+		function easing(initialScroll){
 		
 			var t = interpolatedTime;
 			var b = initialScroll;
@@ -274,6 +289,17 @@ class WMSlider extends HTMLElement{
 		
 	}
 
+	get actualHeight(){
+		
+		var height = this.offsetHeight; // Slider Width
+		var sliderStyle = this.style;
+		height += (parseFloat(sliderStyle.marginTop) + parseFloat(sliderStyle.marginBottom)) || 0;
+		height += (parseFloat(sliderStyle.paddingTop) + parseFloat(sliderStyle.paddingBottom)) || 0;
+		height += (parseFloat(sliderStyle.borderTopWidth) + parseFloat(sliderStyle.borderBottomWidth)) || 0;
+		return height;
+		
+	}
+
 	// Plain Getters
 	get maxIndex(){
 		
@@ -295,6 +321,7 @@ class WMSlider extends HTMLElement{
 	// Attributes
 	get isDraggable(){return this.getAttribute('draggable') !== null;}
 	get isInfinite(){return this.getAttribute('infinite') !== null;}
+	get isVertical(){return this.hasAttribute('vertical');}
 	get autoSlideInterval(){return parseInt(this.getAttribute('auto-slide')) || -1;}
 	
 	// Styles
@@ -325,9 +352,11 @@ class WMSliderTrigger extends HTMLButtonElement{
 				switch(that.slideTo){
 					   
 					case 'left':
+					case 'top':
 						var newIndex = activeIndex - slider.elementSlidingAmount;
 						return slider.setActiveChild((activeIndex === slider.minIndex) ? slider.childList.length + newIndex : newIndex);
 					case 'right':
+					case 'bottom':
 						var newIndex = activeIndex + slider.elementSlidingAmount;
 						return slider.setActiveChild((activeIndex === slider.maxIndex) ? newIndex - slider.childList.length : newIndex);
 					default:
