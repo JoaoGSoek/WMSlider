@@ -147,12 +147,12 @@ class WMSlider extends HTMLElement{
 			if(this.childList.indexOf(this.activeChild) > this.childList.length - this.indexedElementAmount &&
 				this.activeElementAlign === 'left'){
 				
-				targetedChild = this.childList[this.childList.length - this.indexedElementAmount];
+				targetedChild = this.childList[Math.max(0, this.childList.length - this.indexedElementAmount)];
 			
 			}else if(this.childList.indexOf(this.activeChild) < this.indexedElementAmount &&
 				this.activeElementAlign === 'right'){
 				
-				targetedChild = this.childList[this.indexedElementAmount - 1];
+				targetedChild = this.childList[Math.min(this.childList.length - 1, this.indexedElementAmount - 1)];
 				
 			}
 		
@@ -304,7 +304,7 @@ class WMSlider extends HTMLElement{
 	get maxIndex(){
 		
 		var max = this.childList.length - 1;
-		if(this.clipUnreachableElement && this.activeElementAlign === 'left') max += -this.indexedElementAmount + 1;
+		if(this.clipUnreachableElement && this.activeElementAlign === 'left') max += Math.max(0, -this.indexedElementAmount + 1);
 		
 		return max;
 
@@ -312,7 +312,7 @@ class WMSlider extends HTMLElement{
 	get minIndex(){
 		
 		var min = 0;
-		if(this.clipUnreachableElement && this.activeElementAlign === 'right') min = this.indexedElementAmount - 1;
+		if(this.clipUnreachableElement && this.activeElementAlign === 'right') min = Math.max(0, this.indexedElementAmount - 1);
 		
 		return min;
 
