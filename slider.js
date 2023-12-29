@@ -304,14 +304,14 @@ class WMSlider extends HTMLElement{
 	get maxIndex(){
 		
 		var max = this.childList.length - 1;
-		if(this.clipUnreachableElement && this.activeElementAlign === 'left') max += Math.max(0, -this.indexedElementAmount + 1);
+		if(this.clipUnreachableElement && this.activeElementAlign === 'left') max += 1 - this.indexedElementAmount;
 		
 		return max;
 
 	}
 	get minIndex(){
 		
-		var min = 0;
+		var min = 0;		
 		if(this.clipUnreachableElement && this.activeElementAlign === 'right') min = Math.max(0, this.indexedElementAmount - 1);
 		
 		return min;
