@@ -347,7 +347,7 @@ class WMSliderTrigger extends HTMLButtonElement{
 			if(that.slider && that.slideTo){
 			   
 				var slider = document.getElementById(that.slider);
-				var activeIndex = [...slider.childList].indexOf(slider.querySelector('*[active]'));
+				var activeIndex = [...slider.childList].indexOf(slider.querySelector(':scope > *[active]'));
 				
 				switch(that.slideTo){
 					   
