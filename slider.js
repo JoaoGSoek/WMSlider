@@ -341,7 +341,10 @@ class WMSliderTrigger extends HTMLButtonElement{
 		
 		var that = this;
 		
-		this.onclick = (e) => {
+		let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+		this.addEventListener(touchEvent, touchFunction);
+		
+		function touchFunction(e){
 			
 			e.preventDefault();
 			if(that.slider && that.slideTo){
